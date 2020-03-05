@@ -2,6 +2,18 @@ import requests
 import click
 import json
 import re
+from PIL import Image
+from io import BytesIO
+from pathlib import Path
+#TODO process indicator based on num on imgs
+#TODO user interacion via click
+
+
+def download_images(links):
+    for link in links:
+        path = Path('Downloads/' + link + '.jpg')
+        i = Image.open(BytesIO(requests.get(link).content))
+        i.save(path)
 
 
 def build_thread_links(numbers, board):
@@ -42,6 +54,7 @@ def parse(link):
 
     thread_links = build_thread_links(thread_list, board=link_match.group(1))
     build_image_links(thread_links, board=link_match.group(1))
+
 
 
 if __name__ == '__main__':
