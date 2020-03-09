@@ -2,3 +2,6 @@
 src/build/*
 srv/main.egg-info/*
 src/venv/*
+src/app/__pycache__
+src/dist
+src/download.egg-info
