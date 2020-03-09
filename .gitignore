@@ -1,1 +1,4 @@
 .idea
+src/build/*
+srv/main.egg-info/*
+src/venv/*

@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 #TODO process indicator based on num on imgs
 #TODO user interacion via click
+#TODO change list to dics <filename(hex(8).ext), link>
 
 
 def download_images(links):
@@ -56,8 +57,8 @@ def parse(link):
     build_image_links(thread_links, board=link_match.group(1))
 
 
-
-if __name__ == '__main__':
+@click.command()
+def cli():
     regexp = re.compile(r'\Ahttp[?s]://a.4cdn.org/(\w+)/catalog.json\Z', re.IGNORECASE)
     parse()
 
