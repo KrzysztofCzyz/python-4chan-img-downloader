@@ -12,14 +12,18 @@ from app.types.link import CatalogLinkType, ThreadLinkType
 # TODO download images func <----- - speed it up - possibly use threading
 
 
+def entry_point():
+    cli()
+
+
 @click.group()
 def cli():
     pass
 
 
 @cli.command()
-@click.option('--link', type=CatalogLinkType(), help='Catalog link i.e. boards.4chan.org/BOARD/catalog')
-@click.option('--dry-run', type=click.BOOL, default='false', help='Implemented for test purposes')
+@click.option('--link', '-l', type=CatalogLinkType(), help='Catalog link i.e. boards.4chan.org/BOARD/catalog')
+@click.option('--dry-run', '-d', type=click.BOOL, default='false', help='Implemented for test purposes')
 def catalog(link, dry_run):
     if not dry_run:
         thread_dic = dispatch_link(link)
@@ -29,11 +33,11 @@ def catalog(link, dry_run):
 
 
 @cli.command()
-@click.option('--link', type=ThreadLinkType(), help='Thread link i.e. boards.4chan.org/BOARD/thread/TH_NUM')
-@click.option('--dry-run', type=click.BOOL, default='false', help='Implemented for test purposes')
+@click.option('--link', '-l', type=ThreadLinkType(), help='Thread link i.e. boards.4chan.org/BOARD/thread/TH_NUM')
+@click.option('--dry-run', '-d', type=click.BOOL, default='false', help='Implemented for test purposes')
 def thread(link, dry_run):
     if not dry_run:
-        image_links = build_image_links(list(link['link']), board=link['board'])
+        image_links = build_image_links(link['link'], board=link['board'], single=True)
         download_images(image_links)
 
 
@@ -67,19 +71,28 @@ def download_images(links):
 def build_thread_links(numbers, board):
     thread_links = list()
     for number in numbers:
-        thread_links.append('https://a.4cdn.org/' + str(board) + '/thread/' + str(number) + '.json')
+        thread_links.extend('https://a.4cdn.org/' + str(board) + '/thread/' + str(number) + '.json')
     return thread_links
 
 
-def build_image_links(thread_list, board):
+def build_image_links(thread_list, board, single=False):
     image_links = list()
-    with click.progressbar(thread_list, label="Building image links") as th_list_bar:
-        for thread in th_list_bar:
-            request = requests.get(thread)
-            jsn = json.loads(request.content)
-            for post in jsn['posts']:
-                if post.get('filename'):
-                    if post.get('ext') == '.jpg' or post.get('ext') == '.png' or post.get('ext') == '.gif':
-                        image_links.append({'link': 'https://i.4cdn.org/' + str(board) + '/' + str(post.get('tim'))
-                                           + str(post.get('ext')), 'filename': secrets.token_hex(8)+post.get('ext')})
+    if single:
+        image_links.extend(get_image_link(thread_list, board))
+    else:
+        with click.progressbar(thread_list, label="Building image links") as th_list_bar:
+            for thread in th_list_bar:
+                image_links.extend(get_image_link(thread, board))
     return image_links
+
+
+def get_image_link(link, board):
+    links = list()
+    request = requests.get(link)
+    jsn = json.loads(request.content)
+    for post in jsn['posts']:
+        if post.get('filename'):
+            if post.get('ext') == '.jpg' or post.get('ext') == '.png' or post.get('ext') == '.gif':
+                links.append({'link': 'https://i.4cdn.org/' + str(board) + '/' + str(post.get('tim'))
+                                      + str(post.get('ext')), 'filename': secrets.token_hex(8) + post.get('ext')})
+    return links

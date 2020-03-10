@@ -18,11 +18,9 @@ class CatalogLinkType(click.ParamType):
         elif link_match2:
             return {'link': "http://a.4cdn.org/" + link_match2.group(1)
                             + "/catalog.json", 'board': link_match2.group(1)}
-        elif type(value) == str:
+        else:
             return {'link': "http://a.4cdn.org/" + value
                             + "/catalog.json", 'board': value}
-        else:
-            self.fail(f"Expected a link, got {value!r} of type {type(value).__name__}", param, ctx)
 
 
 class ThreadLinkType(click.ParamType):

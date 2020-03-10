@@ -10,7 +10,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        download=app.download:cli
+        download=app.download:entry_point
     ''',
 )
 
