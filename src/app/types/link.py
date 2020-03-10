@@ -2,7 +2,7 @@ import click
 import re
 
 
-class LinkType(click.ParamType):
+class CatalogLinkType(click.ParamType):
     name = "Link"
 
     def convert(self, value, param, ctx):
@@ -13,9 +13,28 @@ class LinkType(click.ParamType):
         link_match = regexp.match(value)
         link_match2 = regexp2.match(value)
         if link_match:
-            return {'link': "http://a.4cdn.org/" + link_match.group(1) + "/catalog.json", 'board': link_match.group(1)}
+            return {'link': "http://a.4cdn.org/" + link_match.group(1)
+                            + "/catalog.json", 'board': link_match.group(1)}
         elif link_match2:
             return {'link': "http://a.4cdn.org/" + link_match2.group(1)
                             + "/catalog.json", 'board': link_match2.group(1)}
+        elif type(value) == str:
+            return {'link': "http://a.4cdn.org/" + value
+                            + "/catalog.json", 'board': value}
+        else:
+            self.fail(f"Expected a link, got {value!r} of type {type(value).__name__}", param, ctx)
+
+
+class ThreadLinkType(click.ParamType):
+    name = "Link"
+
+    def convert(self, value, param, ctx):
+        # https://boards.4chan.org/BOARD/thread/TH_NUM(.json)
+        regexp = re.compile(r'\A(?:http[?s]://)?boards.4chan(?:nel)?.org/(\w+)/thread/([0-9]+)(?:.json)?\Z'
+                            , re.IGNORECASE)
+        link_match = regexp.match(value)
+        if link_match:
+            return {'link': "http://boards.4chan.org/" + link_match.group(1)
+                            + "/thread/" + link_match.group(2) + ".json", 'board': link_match.group(1)}
         else:
             self.fail(f"Expected a link, got {value!r} of type {type(value).__name__}", param, ctx)

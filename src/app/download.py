@@ -6,13 +6,10 @@ import os
 from PIL import Image
 from io import BytesIO
 from pathlib import Path
-from app.types.link import LinkType
+from app.types.link import CatalogLinkType, ThreadLinkType
 
-# TODO process indicator based on num of imgs - DONE
-# TODO user interacion via click - DONE
-# TODO change list to dics <filename(hex(8).ext), link> - DONE
 # TODO style the app's output (click.secho)
-# TODO download images func <----- - DONE - works slow at the moment
+# TODO download images func <----- - speed it up - possibly use threading
 
 
 @click.group()
@@ -21,12 +18,23 @@ def cli():
 
 
 @cli.command()
-@click.option('--link', type=LinkType(), help='Catalog link')
-def catalog(link):
-    thread_dic = dispatch_link(link)
-    thread_links = build_thread_links(thread_dic['th_list'], board=link['board'])
-    image_links = build_image_links(thread_links, board=link['board'])
-    download_images(image_links)
+@click.option('--link', type=CatalogLinkType(), help='Catalog link i.e. boards.4chan.org/BOARD/catalog')
+@click.option('--dry-run', type=click.BOOL, default='false', help='Implemented for test purposes')
+def catalog(link, dry_run):
+    if not dry_run:
+        thread_dic = dispatch_link(link)
+        thread_links = build_thread_links(thread_dic['th_list'], board=link['board'])
+        image_links = build_image_links(thread_links, board=link['board'])
+        download_images(image_links)
+
+
+@cli.command()
+@click.option('--link', type=ThreadLinkType(), help='Thread link i.e. boards.4chan.org/BOARD/thread/TH_NUM')
+@click.option('--dry-run', type=click.BOOL, default='false', help='Implemented for test purposes')
+def thread(link, dry_run):
+    if not dry_run:
+        image_links = build_image_links(list(link['link']), board=link['board'])
+        download_images(image_links)
 
 
 def dispatch_link(link):
