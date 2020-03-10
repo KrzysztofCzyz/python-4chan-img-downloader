@@ -5,3 +5,5 @@ src/venv/*
 src/app/__pycache__
 src/dist
 src/download.egg-info
+src/Downloads
+src/test

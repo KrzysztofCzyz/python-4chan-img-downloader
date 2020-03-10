@@ -1,28 +1,32 @@
 import requests
 import click
 import json
+import secrets
+import os
 from PIL import Image
 from io import BytesIO
 from pathlib import Path
 from app.types.link import LinkType
 
 # TODO process indicator based on num of imgs - DONE
-# TODO user interacion via click
-# TODO change list to dics <filename(hex(8).ext), link>
-# TODO style the app's output (click.style)
-# TODO download images func <-----
+# TODO user interacion via click - DONE
+# TODO change list to dics <filename(hex(8).ext), link> - DONE
+# TODO style the app's output (click.secho)
+# TODO download images func <----- - DONE - works slow at the moment
 
-@click.command()
+
+@click.group()
 def cli():
-    parse()
+    pass
 
 
-@click.command()
+@cli.command()
 @click.option('--link', type=LinkType(), help='Catalog link')
-def parse(link):
+def catalog(link):
     thread_dic = dispatch_link(link)
     thread_links = build_thread_links(thread_dic['th_list'], board=link['board'])
     image_links = build_image_links(thread_links, board=link['board'])
+    download_images(image_links)
 
 
 def dispatch_link(link):
@@ -41,14 +45,15 @@ def dispatch_link(link):
 
 
 def download_images(links):
-    iterator = 0
-    with click.progressbar(length=len(links), label='Downloading images to hard disk') as links_bar:
-        for link in links:
-            path = Path('Downloads/' + link + '.jpg')
-            i = Image.open(BytesIO(requests.get(link).content))
+    try:
+        os.mkdir(os.curdir+os.sep+'Downloads')
+    except FileExistsError:
+        pass
+    with click.progressbar(links, label='Downloading images to hard disk') as links_bar:
+        for link in links_bar:
+            path = Path(os.curdir + os.sep + 'Downloads' + os.sep + link['filename'])
+            i = Image.open(BytesIO(requests.get(link['link']).content))
             i.save(path)
-            iterator += 1
-            links_bar.update(iterator)
 
 
 def build_thread_links(numbers, board):
@@ -66,6 +71,7 @@ def build_image_links(thread_list, board):
             jsn = json.loads(request.content)
             for post in jsn['posts']:
                 if post.get('filename'):
-                    image_links.append('https://i.4cdn.org/' + str(board) + '/' + str(post.get('tim'))
-                                       + str(post.get('ext')))
+                    if post.get('ext') == '.jpg' or post.get('ext') == '.png' or post.get('ext') == '.gif':
+                        image_links.append({'link': 'https://i.4cdn.org/' + str(board) + '/' + str(post.get('tim'))
+                                           + str(post.get('ext')), 'filename': secrets.token_hex(8)+post.get('ext')})
     return image_links
