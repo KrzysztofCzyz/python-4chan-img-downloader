@@ -35,4 +35,4 @@ class ThreadLinkType(click.ParamType):
             return {'link': "http://boards.4chan.org/" + link_match.group(1)
                             + "/thread/" + link_match.group(2) + ".json", 'board': link_match.group(1)}
         else:
-            self.fail(f"Expected a link, got {value!r} of type {type(value).__name__}", param, ctx)
+            self.fail(f"Expected a link, got {value!r}", param, ctx)

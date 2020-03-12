@@ -2,8 +2,15 @@
 src/build/*
 srv/main.egg-info/*
 src/venv/*
-src/app/__pycache__
+src/app/__pycache__/*
 src/dist
 src/download.egg-info
 src/Downloads
 src/test
+src/.tox
+src/.cache
+src/.pytest_cache
+src/__init__.pyc
+src/__pycache__
+src/app/__init__.pyc
+src/app/types/__pycache__
