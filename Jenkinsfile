@@ -21,7 +21,7 @@ pipeline{
                 }
             }
             steps {
-                sh 'cd src; tox'
+                sh 'cd src && tox'
             }
             post {
                 always {
