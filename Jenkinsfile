@@ -1,0 +1,33 @@
+pipeline{
+    agent none
+    options {
+        skipStagesAfterUnstable()
+    }
+    stages{
+        stage('Build') {
+            agent {
+                docker {
+                    image 'python:3-alpine'
+                }
+            }
+            steps {
+                sh python setup.py build
+            }
+        }
+        stage('Test') {
+            agent {
+                docker{
+                    image 'img-downloader-test:v0.01'
+                }
+            }
+            steps {
+                sh 'tox'
+            }
+            post {
+                always {
+                    junit 'test.xml'
+                }
+            }
+        }
+    }
+}
