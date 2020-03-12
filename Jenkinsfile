@@ -21,11 +21,11 @@ pipeline{
                 }
             }
             steps {
-                sh 'tox'
+                sh 'cd src; tox'
             }
             post {
                 always {
-                    junit 'test.xml'
+                    junit 'src/test.xml'
                 }
             }
         }
