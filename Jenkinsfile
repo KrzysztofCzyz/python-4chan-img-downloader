@@ -11,7 +11,8 @@ pipeline{
                 }
             }
             steps {
-                sh 'python setup.py build'
+                sh 'pip install setuptools'
+                sh 'python src/setup.py build'
             }
         }
         stage('Test') {
