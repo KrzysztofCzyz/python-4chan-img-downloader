@@ -17,3 +17,4 @@ src/app/types/__pycache__
 src/requirements.txt
 Dockerfile
 .directory
+src/tests.xml

@@ -25,20 +25,22 @@ def cli():
 @click.option('--link', '-l', type=CatalogLinkType(), help='Catalog link i.e. boards.4chan.org/BOARD/catalog')
 @click.option('--test-run/--no-test-run', default='False', help='Implemented for test purposes')
 def catalog(link, test_run):
-    if not test_run:
-        thread_dic = dispatch_catalog_link(link)
-        thread_links = build_thread_links(thread_dic['th_list'], board=link['board'])
-        image_links = build_image_links(thread_links, board=link['board'])
-        download_images(image_links)
+    if test_run:
+        return
+    thread_dic = dispatch_catalog_link(link)
+    thread_links = build_thread_links(thread_dic['th_list'], board=link['board'])
+    image_links = build_image_links(thread_links, board=link['board'])
+    download_images(image_links)
 
 
 @cli.command()
 @click.option('--link', '-l', type=ThreadLinkType(), help='Thread link i.e. boards.4chan.org/BOARD/thread/TH_NUM')
 @click.option('--test-run/--no-test-run', default='False', help='Implemented for test purposes')
 def thread(link, test_run):
-    if not test_run:
-        image_links = build_image_links(link['link'], board=link['board'], single=True)
-        download_images(image_links)
+    if test_run:
+        return
+    image_links = build_image_links(link['link'], board=link['board'], single=True)
+    download_images(image_links)
 
 
 def dispatch_catalog_link(link):
