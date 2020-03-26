@@ -26,6 +26,7 @@ def cli():
 @click.option('--test-run/--no-test-run', default='False', help='Implemented for test purposes')
 def catalog(link, test_run):
     if test_run:
+        print(link)
         return
     thread_dic = dispatch_catalog_link(link)
     thread_links = build_thread_links(thread_dic['th_list'], board=link['board'])
@@ -38,6 +39,7 @@ def catalog(link, test_run):
 @click.option('--test-run/--no-test-run', default='False', help='Implemented for test purposes')
 def thread(link, test_run):
     if test_run:
+        print(link)
         return
     image_links = build_image_links(link['link'], board=link['board'], single=True)
     download_images(image_links)

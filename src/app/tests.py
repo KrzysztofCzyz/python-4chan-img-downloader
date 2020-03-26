@@ -11,6 +11,10 @@ def dry_run(fun, link):
     return result
 
 
+def test():
+    assert 1 == 1
+
+
 class ThreadTests:
 
     # checking malformed http(s) link on http conditional match
@@ -42,7 +46,7 @@ class ThreadTests:
     def thread_with_link_test(self):
         with cli_runner.isolated_filesystem():
             cli_runner.invoke(thread, ["--link", "https://boards.4channel.org/po/thread/570368"])
-            download_dir = "/Downloads"
+            download_dir = "Downloads"
             assert len([name for name in os.listdir(download_dir) if os.path.isfile(os.path.join(download_dir,
                                                                                                  name))]) == 3
 
