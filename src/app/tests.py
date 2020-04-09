@@ -11,10 +11,6 @@ def dry_run(fun, link):
     return result
 
 
-def test():
-    assert 1 == 1
-
-
 class ThreadTests:
 
     # checking malformed http(s) link on http conditional match
