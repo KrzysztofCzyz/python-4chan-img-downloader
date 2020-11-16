@@ -1,19 +1,15 @@
 from pathlib import Path
 import secrets
 import os
-import requests
-from PIL import Image
-from io import BytesIO
 from app.board import Board
 from app import base_config, logger
 from threading import Thread, Lock
+from app.models import Picture
 
 
 def download_image(link, path, lock):
-    image = Image.open(BytesIO(requests.get(link).content))
-    image.save(path)
-    with lock:
-        logger.log("Saved image to path: " + str(path))
+    pic = Picture(link, path)
+    pic.initialize(lock)
 
 
 class DownloadManager:
